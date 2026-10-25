@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Smart Expense Manager</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <div id="toast"></div>
+
+    <section id="authPage" class="auth-page">
+      <div class="auth-card">
+        <div class="brand">Budget<span>Manager</span></div>
+        <p class="muted">Smart Expense & Budget Manager</p>
+        <div class="tabs">
+          <button id="loginTab" class="tab active">Login</button>
+          <button id="registerTab" class="tab">Register</button>
+        </div>
+        <form id="authForm">
+          <div id="nameField" class="hidden">
+            <label>Name</label>
+            <input id="authName" />
+          </div>
+          <label>Email</label>
+          <input id="authEmail" type="email" required />
+          <label>Password</label>
+          <input id="authPassword" type="password" minlength="6" required />
+          <button class="primary" type="submit" id="authSubmit">Login</button>
+        </form>
+        <p id="authMessage" class="message"></p>
+      </div>
+      <div class="auth-image">
+        <img src="pagelayout.png" alt="Budget Management" />
+      </div>
+    </section>
+
+    <div id="app" class="hidden">
+      <aside class="sidebar">
+        <div class="brand">Budget<span>Manager</span></div>
+        <nav>
+          <button class="nav active" data-page="dashboard">
+            ▦ <span>Overview</span>
+          </button>
+          <button class="nav" data-page="transactions">
+            ↔ <span>Transactions</span>
+          </button>
+          <button class="nav" data-page="budgets">
+            ◉ <span>Budgets</span>
+          </button>
+          <button class="nav" data-page="reports">
+            ◒ <span>Reports</span>
+          </button>
+          <button class="nav" data-page="settings">
+            ⚙ <span>Settings</span>
+          </button>
+        </nav>
+        <div class="side-bottom">
+          <small>MONTHLY BUDGET</small><strong id="sideBudget">₹0</strong
+          ><span>Keep spending under control.</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header>
+          <div>
+            <h1 id="pageTitle">Dashboard</h1>
+            <p>Track your money, stay on budget.</p>
+          </div>
+          <div class="user-menu">
+            <span id="userName">User</span><button id="logout">Logout</button>
+          </div>
+        </header>
+
+        <section id="dashboardPage" class="page">
+          <div class="cards">
+            <div class="card">
+              <span>Total Balance</span>
+              <h2 id="balance">₹0</h2>
+              <b class="green">Available</b>
+            </div>
+            <div class="card">
+              <span>Total Income</span>
+              <h2 id="income">₹0</h2>
+              <b class="green">Income</b>
+            </div>
+            <div class="card">
+              <span>Total Expenses</span>
+              <h2 id="expenses">₹0</h2>
+              <b class="red">Spent</b>
+            </div>
+            <div class="card">
+              <span>Savings</span>
+              <h2 id="savings">₹0</h2>
+              <b class="purple">Saved</b>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Spending by category</h3>
+                  <p>Where your money goes</p>
+                </div>
+              </div>
+              <div class="chart-box"><canvas id="categoryChart"></canvas></div>
+            </div>
+            <div class="panel">
+              <h3>Budget progress</h3>
+              <div id="budgetPreview"></div>
+            </div>
+          </div>
+          <div class="bottom-grid">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Recent transactions</h3>
+                <button class="link" data-page="transactions">View all</button>
+              </div>
+              <div id="recent"></div>
+            </div>
+            <div class="panel">
+              <h3>Quick add expense</h3>
+              <form id="quickExpense"></form>
+            </div>
+          </div>
+        </section>
+
+        <section id="transactionsPage" class="page hidden">
+          <div class="panel">
+            <div class="toolbar">
+              <h3>Transactions</h3>
+
+              <div>
+                <button class="primary small" id="openIncome">
+                  + Add Income
+                </button>
+
+                <button class="primary small" id="openExpense">
+                  + Add Expense
+                </button>
+              </div>
+            </div>
+            <input
+              class="search"
+              id="search"
+              placeholder="Search category, description or payment method..."
+            />
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Payment</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expenseTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="budgetsPage" class="page hidden">
+          <div class="panel">
+            <div class="toolbar">
+              <h3>Monthly Budgets</h3>
+              <button class="primary small" id="openBudget">
+                + Add Budget
+              </button>
+            </div>
+            <div id="budgetList"></div>
+          </div>
+        </section>
+
+        <section id="reportsPage" class="page hidden">
+          <div class="grid">
+            <div class="panel">
+              <h3>Expense analytics</h3>
+              <div class="chart-box"><canvas id="reportChart"></canvas></div>
+            </div>
+            <div class="panel">
+              <h3>Smart insights</h3>
+              <div id="insights"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="settingsPage" class="page hidden">
+          <div class="panel settings">
+            <h3>Account Settings</h3>
+            <p>Logged in as <b id="settingsEmail"></b></p>
+            <hr />
+            <h4>Appearance</h4>
+            <button id="themeBtn" class="secondary">Toggle dark mode</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="incomeModal" class="modal hidden">
+      <div class="modal-card">
+        <button class="close" data-close="incomeModal">×</button>
+        <h3>Add Income</h3>
+        <form id="incomeForm">
+          <label>Income Source</label>
+          <input
+            id="incomeSource"
+            type="text"
+            placeholder="Salary, Freelance, Business..."
+            required
+          />
+          <label>Amount</label>
+          <input
+            id="incomeAmount"
+            type="number"
+            min="1"
+            placeholder="Enter amount"
+            required
+          />
+          <label>Date</label>
+          <input id="incomeDate" type="date" required />
+          <button class="primary" type="submit">Add Income</button>
+        </form>
+      </div>
+    </div>
+    <div id="expenseModal" class="modal hidden">
+      <div class="modal-card">
+        <button class="close" data-close="expenseModal">×</button>
+        <h3 id="expenseModalTitle">Add Expense</h3>
+        <form id="expenseForm"></form>
+      </div>
+    </div>
+    <div id="budgetModal" class="modal hidden">
+      <div class="modal-card">
+        <button class="close" data-close="budgetModal">×</button>
+        <h3>Add Budget</h3>
+        <form id="budgetForm"></form>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
